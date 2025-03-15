@@ -1,12 +1,6 @@
 @description('Location for all resources')
 param location string = 'canadacentral'
 
-@description('SQL administrator username')
-param sqlAdminUsername string
-
-@secure()
-@description('SQL administrator password')
-param sqlAdminPassword string
 
 // Virtual Network Provisioning
 resource vnet 'Microsoft.Network/virtualNetworks@2024-05-01' = {
