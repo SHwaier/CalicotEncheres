@@ -1,4 +1,4 @@
-name: Build and Deploy Web App
+name: Build and Deploy
 
 on:
   push:
@@ -10,15 +10,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v1
+
+      - name: Azure Login
+        uses: azure/login@v1
         with:
-          dotnet-version: '8.0.10'
-      - name: Build Web Application
-        run: dotnet build CalicotEncheres/Auctions.sln
-      - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: app-calicot-dev-6
-          slot-name: production
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy Infrastructure via Bicep (Dev)
+        run: |
+          az deployment group create \
+            --resource-group rg-calicot-web-dev-6 \
+            --template-file infrastructure/main.bicep \
+            --parameters sqlAdminUsername=${{ secrets.SQL_ADMIN_USERNAME }} sqlAdminPassword=${{ secrets.SQL_ADMIN_PASSWORD }} deployment='dev'
+      
+      # Uncomment the following step to deploy for QA instead:
+      # - name: Deploy Infrastructure via Bicep (QA)
+      #   run: |
+      #     az deployment group create \
+      #       --resource-group rg-calicot-web-dev-6 \
+      #       --template-file infrastructure/main.bicep \
+      #       --parameters sqlAdminUsername=${{ secrets.SQL_ADMIN_USERNAME }} sqlAdminPassword=${{ secrets.SQL_ADMIN_PASSWORD }} deployment='QA'
