@@ -1,9 +1,6 @@
 @description('Location for all resources')
 param location string = 'canadacentral'
 
-@description('Unique identification code for resource naming (e.g., 6 or cc-6)')
-param code string
-
 @description('SQL administrator username')
 param sqlAdminUsername string
 
@@ -13,7 +10,7 @@ param sqlAdminPassword string
 
 // Virtual Network Provisioning
 resource vnet 'Microsoft.Network/virtualNetworks@2024-05-01' = {
-  name: 'vnet-dev-calicot-cc-${code}'
+  name: 'vnet-dev-calicot-cc-6'
   location: location
   properties: {
     addressSpace: {
@@ -23,13 +20,13 @@ resource vnet 'Microsoft.Network/virtualNetworks@2024-05-01' = {
     }
     subnets: [
       {
-        name: 'snet-dev-web-cc-${code}'
+        name: 'snet-dev-web-cc-6'
         properties: {
           addressPrefix: '10.0.1.0/24'
         }
       }
       {
-        name: 'snet-dev-db-cc-${code}'
+        name: 'snet-dev-db-cc-6'
         properties: {
           addressPrefix: '10.0.2.0/24'
         }
@@ -40,7 +37,7 @@ resource vnet 'Microsoft.Network/virtualNetworks@2024-05-01' = {
 
 // App Service Plan (Standard S1)
 resource appServicePlan 'Microsoft.Web/serverfarms@2021-03-01' = {
-  name: 'plan-calicot-dev-${code}'
+  name: 'plan-calicot-dev-6'
   location: location
   sku: {
     tier: 'Standard'
@@ -50,7 +47,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2021-03-01' = {
 
 // Web App with system-assigned managed identity, HTTPS only, Always On, and ImageUrl app setting
 resource webApp 'Microsoft.Web/sites@2021-03-01' = {
-  name: 'app-calicot-dev-${code}'
+  name: 'app-calicot-dev-6'
   location: location
   identity: {
     type: 'SystemAssigned'
@@ -76,7 +73,7 @@ resource webApp 'Microsoft.Web/sites@2021-03-01' = {
 
 // SQL Server
 resource sqlServer 'Microsoft.Sql/servers@2021-11-01' = {
-  name: 'sqlsrv-calicot-dev-${code}'
+  name: 'sqlsrv-calicot-dev-6'
   location: location
   properties: {
     administratorLogin: sqlAdminUsername
@@ -87,7 +84,7 @@ resource sqlServer 'Microsoft.Sql/servers@2021-11-01' = {
 
 // SQL Database
 resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-11-01' = {
-  name: 'sqldb-calicot-dev-${code}'
+  name: 'sqldb-calicot-dev-6'
   parent: sqlServer
   location: location
   sku: {
@@ -101,7 +98,7 @@ resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-11-01' = {
 
 // Key Vault with access policy for the Web App managed identity
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
-  name: 'kv-calicot-dev-${code}'
+  name: 'kv-calicot-dev-6'
   location: location
   properties: {
     sku: {
