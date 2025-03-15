@@ -13,8 +13,5 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Deploy Infrastructure via Bicep
-        run: |
-          az deployment group create \
-            --resource-group rg-calicot-web-dev-6 \
-            --template-file infrastructure/main.bicep
-            --parameters sqlAdminUsername=${{ secrets.SQL_ADMIN_USERNAME }} sqlAdminPassword=${{ secrets.SQL_ADMIN_PASSWORD }}
+        run: az deployment group create --resource-group rg-calicot-web-dev-6 --template-file infrastructure/main.bicep --parameters sqlAdminUsername=${{ secrets.SQL_ADMIN_USERNAME }} sqlAdminPassword=${{ secrets.SQL_ADMIN_PASSWORD }}
+
