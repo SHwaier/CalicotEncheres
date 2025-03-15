@@ -7,10 +7,12 @@
   @secure()
   @description('SQL administrator password')
   param sqlAdminPassword string
+  @description('This is the target deployment platform (e.g. dev/QA)')
+  param deployment string
 
   // Virtual Network Provisioning
   resource vnet 'Microsoft.Network/virtualNetworks@2024-05-01' = {
-    name: 'vnet-dev-calicot-cc-6'
+    name: 'vnet-${deployment}-calicot-cc-6'
     location: location
     properties: {
       addressSpace: {
@@ -20,13 +22,13 @@
       }
       subnets: [
         {
-          name: 'snet-dev-web-cc-6'
+          name: 'snet-${deployment}-web-cc-6'
           properties: {
             addressPrefix: '10.0.1.0/24'
           }
         }
         {
-          name: 'snet-dev-db-cc-6'
+          name: 'snet-${deployment}-db-cc-6'
           properties: {
             addressPrefix: '10.0.2.0/24'
           }
@@ -37,7 +39,7 @@
 
   // App Service Plan (Standard S1)
   resource appServicePlan 'Microsoft.Web/serverfarms@2021-03-01' = {
-    name: 'plan-calicot-dev-6'
+    name: 'plan-calicot-${deployment}-6'
     location: location
     sku: {
       tier: 'Standard'
@@ -47,7 +49,7 @@
 
   // Web App with system-assigned managed identity, HTTPS only, Always On, and ImageUrl app setting
   resource webApp 'Microsoft.Web/sites@2022-09-01' = {
-    name: 'app-calicot-dev-6'
+    name: 'app-calicot-${deployment}-6'
     location: location
     identity: {
       type: 'SystemAssigned'
@@ -73,7 +75,7 @@
 
   // SQL Server
   resource sqlServer 'Microsoft.Sql/servers@2021-11-01' = {
-    name: 'sqlsrv-calicot-dev-6'
+    name: 'sqlsrv-calicot-${deployment}-6'
     location: location
     properties: {
       administratorLogin: sqlAdminUsername
@@ -84,7 +86,7 @@
 
   // SQL Database
   resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-11-01' = {
-    name: 'sqldb-calicot-dev-6'
+    name: 'sqldb-calicot-${deployment}-6'
     parent: sqlServer
     location: location
     sku: {
@@ -95,7 +97,7 @@
 
   // Key Vault with access policy for the Web App managed identity
   resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
-    name: 'kv-calicot-dev-6'
+    name: 'kv-calicot-${deployment}-6'
     location: location
     properties: {
       sku: {
