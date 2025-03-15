@@ -43,8 +43,8 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2021-03-01' = {
   name: 'plan-calicot-dev-${code}'
   location: location
   sku: {
-    Tier: 'Standard'
-    Name: 'S1'
+    tier: 'Standard'
+    name: 'S1'
   }
 }
 
@@ -66,14 +66,7 @@ resource webApp 'Microsoft.Web/sites@2021-03-01' = {
           value: 'https://stcalicotprod000.blob.core.windows.net/images/'
         }
       ]
-      // Optional: add connection string referencing the Key Vault secret
-      connectionStrings: [
-        {
-          name: 'ConnectionStrings'
-          connectionString: '@Microsoft.KeyVault(SecretUri=${keyVault.properties.vaultUri}secrets/ConnectionStrings/)'
-          type: 'SQLAzure'
-        }
-      ]
+      // Removed connectionStrings block to break circular dependency
     }
   }
   dependsOn: [
@@ -97,8 +90,12 @@ resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-11-01' = {
   name: 'sqldb-calicot-dev-${code}'
   parent: sqlServer
   location: location
+  sku: {
+    name: 'Basic'
+    tier: 'Basic'
+  }
   properties: {
-    edition: 'Basic'
+    // Removed "edition" property; edition is specified in sku.
   }
 }
 
@@ -127,4 +124,5 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
     enabledForDeployment: true
     enabledForTemplateDeployment: true
   }
+  // Removed explicit dependsOn to avoid cycle issues.
 }
